@@ -10,6 +10,7 @@
   <arg name="verbose"           default = "false" />  
   
   <node pkg="cocolic" type="odometry_node" name="$(anon odometry_node)" output="screen">
+    <env name="LD_LIBRARY_PATH" value="/usr/local/lib:$(env LD_LIBRARY_PATH)" />
     <param name="project_path"     type="string" value="$(find cocolic)" />
     <param name="config_path"     type="string" value="$(find cocolic)$(arg config_path)" />
     <param name="bag_path"        type="string" value="$(arg bag_path)" />
@@ -17,5 +18,5 @@
     <param name="verbose"         type="bool"   value="$(arg verbose)" />
   </node>
 
-  <node pkg="rviz" type="rviz" name="rviz_odom" output="log" required = "true" args="-d $(find cocolic)/config/coco.rviz" />
+  <node pkg="rviz" type="rviz" name="rviz_odom" output="log" required = "false" args="-d $(find cocolic)/config/coco.rviz" />
 </launch>

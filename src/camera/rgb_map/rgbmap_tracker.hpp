@@ -143,7 +143,10 @@ class Rgbmap_tracker
         m_current_frame_time = img_with_pose->m_timestamp;
         m_last_frame_time = m_current_frame_time;
         std::vector< uchar > status;
-        m_lk_optical_flow_kernel->track_image( img_with_pose->m_img_gray, m_last_tracked_pts, m_current_tracked_pts, status );
+        if (m_lk_optical_flow_kernel != nullptr)
+        {
+            m_lk_optical_flow_kernel->track_image( img_with_pose->m_img_gray, m_last_tracked_pts, m_current_tracked_pts, status );
+        }
 
         new_points.clear();
         new_pixs.clear();

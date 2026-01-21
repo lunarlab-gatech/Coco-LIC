@@ -27,6 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   message_generation
   image_transport
+  livox_ros_driver
 )
 
 # FIND_PACKAGE(Boost REQUIRED COMPONENTS thread)
@@ -39,7 +40,12 @@ endif()
 find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
 # find_package(Sophus REQUIRED)
-find_package(OpenCV REQUIRED)
+
+# Use system OpenCV 4.2 to match PCL dependencies and avoid version conflicts
+set(OpenCV_DIR "/usr/lib/x86_64-linux-gnu/cmake/opencv4")
+find_package(OpenCV 4.2 REQUIRED)
+message(STATUS "Using OpenCV ${OpenCV_VERSION} from ${OpenCV_DIR}")
+
 find_package(PCL 1.13.0 REQUIRED)
 
 # find_package(yaml-cpp REQUIRED)
@@ -102,6 +108,7 @@ file(GLOB lidar_odometry_files
     "src/lidar/livox_feature_extraction.cpp"
 )
 add_library(lidar_lib ${lidar_odometry_files})
+add_dependencies(lidar_lib ${catkin_EXPORTED_TARGETS})
 target_link_libraries(lidar_lib spline_lib ${thirdparty_libraries})
 
 file(GLOB r3live_files
@@ -111,6 +118,7 @@ file(GLOB r3live_files
     "src/camera/*.cpp"
 )
 add_library(r3live_lib ${r3live_files})
+add_dependencies(r3live_lib ${catkin_EXPORTED_TARGETS})
 target_link_libraries(r3live_lib ${thirdparty_libraries})
 
 add_executable(odometry_node 

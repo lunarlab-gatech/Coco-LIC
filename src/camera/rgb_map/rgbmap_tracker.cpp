@@ -57,11 +57,17 @@ Dr. Fu Zhang < fuzhang@hku.hk >.
 
 Rgbmap_tracker::Rgbmap_tracker()
 {
-    cv::TermCriteria criteria = cv::TermCriteria((cv::TermCriteria::COUNT) + (cv::TermCriteria::EPS), 10, 0.05);
-    if (m_lk_optical_flow_kernel == nullptr)
-    {
-        m_lk_optical_flow_kernel = std::make_shared<LK_optical_flow_kernel>(cv::Size(21, 21), 3, criteria,
-                                                                            cv_OPTFLOW_LK_GET_MIN_EIGENVALS);
+    try {
+        cv::TermCriteria criteria = cv::TermCriteria((cv::TermCriteria::COUNT) + (cv::TermCriteria::EPS), 10, 0.05);
+        if (m_lk_optical_flow_kernel == nullptr)
+        {
+            m_lk_optical_flow_kernel = std::make_shared<LK_optical_flow_kernel>(cv::Size(21, 21), 3, criteria,
+                                                                                cv_OPTFLOW_LK_GET_MIN_EIGENVALS);
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Warning: Failed to initialize LK optical flow kernel: " << e.what() << std::endl;
+        m_lk_optical_flow_kernel = nullptr;
     }
 }
 
@@ -272,7 +278,17 @@ void Rgbmap_tracker::track_img(std::shared_ptr<Image_frame> &img_pose, double di
     }
 
     // m_lk_optical_flow_kernel->track_image( frame_gray, m_last_tracked_pts, m_current_tracked_pts, status, 2 );
-    cv::calcOpticalFlowPyrLK(last_img, frame_gray, m_last_tracked_pts, m_current_tracked_pts, status, err, cv::Size(21, 21), 3);
+    // Check if last_img is valid before calling OpenCV optical flow
+    if (!last_img.empty() && !frame_gray.empty() && last_img.size() == frame_gray.size())
+    {
+        cv::calcOpticalFlowPyrLK(last_img, frame_gray, m_last_tracked_pts, m_current_tracked_pts, status, err, cv::Size(21, 21), 3);
+    }
+    else
+    {
+        // If last_img is not valid, just skip optical flow and clear tracking
+        status.clear();
+        m_current_tracked_pts.clear();
+    }
     if (0)  //
     {
         std::vector<uchar> reverse_status;
