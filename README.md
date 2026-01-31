@@ -21,7 +21,7 @@ The following are three main characters of 🥥 Coco-LIC [[`Paper`](https://arxi
 + Ceres 2.0.0
 + OpenCV 4（comes with ROS）
 + PCL >= 1.13
-+ [livox_ros_driver](https://github.com/Livox-SDK/livox_ros_driver)
++ [livox_ros_driver2](https://github.com/Livox-SDK/livox_ros_driver2)
 + yaml-cpp
 
 ## Install

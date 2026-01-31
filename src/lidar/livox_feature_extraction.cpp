@@ -62,7 +62,7 @@ namespace cocolic
   }
 
   bool LivoxFeatureExtraction::ParsePointCloud(
-      const livox_ros_driver::CustomMsg::ConstPtr &lidar_msg,
+      const livox_ros_driver2::CustomMsg::ConstPtr &lidar_msg,
       RTPointCloud::Ptr out_cloud)
   {
     clearState();
@@ -145,7 +145,7 @@ namespace cocolic
   }
 
   bool LivoxFeatureExtraction::ParsePointCloudR3LIVE(
-      const livox_ros_driver::CustomMsg::ConstPtr &lidar_msg,
+      const livox_ros_driver2::CustomMsg::ConstPtr &lidar_msg,
       RTPointCloud::Ptr out_cloud)
   {
     clearState();
@@ -237,7 +237,7 @@ namespace cocolic
   }
 
   bool LivoxFeatureExtraction::ParsePointCloudNoFeature(
-      const livox_ros_driver::CustomMsg::ConstPtr &lidar_msg,
+      const livox_ros_driver2::CustomMsg::ConstPtr &lidar_msg,
       RTPointCloud::Ptr out_cloud)
   {
     clearState();
@@ -280,7 +280,7 @@ namespace cocolic
 // test
 #if 0
 void LivoxFeatureExtraction::LivoxHandler(
-    const livox_ros_driver::CustomMsg::ConstPtr& lidar_msg) {
+    const livox_ros_driver2::CustomMsg::ConstPtr& lidar_msg) {
   clearState();
 
   std::vector<RTPointCloud::Ptr> out_cloud;

@@ -206,10 +206,10 @@ namespace cocolic
       }
       else if (lidar_types[idx] == LIVOX)  //[solid-state lidar: Livox]
       {
-        if (!m.isType<livox_ros_driver::CustomMsg>())
+        if (!m.isType<livox_ros_driver2::CustomMsg>())
           std::cout << "Wrong type\n";
 
-        auto lidar_msg = m.instantiate<livox_ros_driver::CustomMsg>();
+        auto lidar_msg = m.instantiate<livox_ros_driver2::CustomMsg>();
         CheckLidarMsgTimestamp(msg_time.toSec(), lidar_msg->header.stamp.toSec());
         LivoxMsgHandle(lidar_msg, idx);
       }
@@ -638,7 +638,7 @@ namespace cocolic
   }
 
   void MsgManager::LivoxMsgHandle(
-      const livox_ros_driver::CustomMsg::ConstPtr &livox_msg, int lidar_id)
+      const livox_ros_driver2::CustomMsg::ConstPtr &livox_msg, int lidar_id)
   {
     RTPointCloud::Ptr livox_raw_cloud(new RTPointCloud);
     // 
@@ -685,10 +685,11 @@ namespace cocolic
     image_buf_.back().image = cvImgPtr->image;
     nerf_time_.push_back(image_buf_.back().timestamp);
 
-    if (image_buf_.back().image.cols == 640 || image_buf_.back().image.cols == 1280)
-    {
-      cv::resize(image_buf_.back().image, image_buf_.back().image, cv::Size(640, 512), 0, 0, cv::INTER_LINEAR);
-    }
+    // Resize disabled - use original resolution to match config intrinsics
+    // if (image_buf_.back().image.cols == 640 || image_buf_.back().image.cols == 1280)
+    // {
+    //   cv::resize(image_buf_.back().image, image_buf_.back().image, cv::Size(640, 512), 0, 0, cv::INTER_LINEAR);
+    // }
 
     // // for tiers
     // if (image_buf_.back().image.cols == 1920)
@@ -722,10 +723,11 @@ namespace cocolic
 
     // std::cout << image_buf_.back().image.rows << " " << image_buf_.back().image.cols << std::endl;
 
-    if (image_buf_.back().image.cols == 640 || image_buf_.back().image.cols == 1280)
-    {
-      cv::resize(image_buf_.back().image, image_buf_.back().image, cv::Size(640, 512), 0, 0, cv::INTER_LINEAR);
-    }
+    // Resize disabled - use original resolution to match config intrinsics
+    // if (image_buf_.back().image.cols == 640 || image_buf_.back().image.cols == 1280)
+    // {
+    //   cv::resize(image_buf_.back().image, image_buf_.back().image, cv::Size(640, 512), 0, 0, cv::INTER_LINEAR);
+    // }
 
     // // for mars
     // if (image_buf_.back().image.cols == 2448)

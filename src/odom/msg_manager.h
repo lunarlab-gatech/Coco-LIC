@@ -23,7 +23,7 @@
 #include <rosbag/view.h>
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
-#include <livox_ros_driver/CustomMsg.h>
+#include <livox_ros_driver2/CustomMsg.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/Imu.h>
@@ -273,7 +273,7 @@ namespace cocolic
     void VelodyneMsgHandleNoFeature(
         const sensor_msgs::PointCloud2::ConstPtr &vlp16_msg, int lidar_id);
 
-        void LivoxMsgHandle(const livox_ros_driver::CustomMsg::ConstPtr &livox_msg,
+        void LivoxMsgHandle(const livox_ros_driver2::CustomMsg::ConstPtr &livox_msg,
                             int lidar_id);
 
     void ImageMsgHandle(const sensor_msgs::ImageConstPtr &msg);

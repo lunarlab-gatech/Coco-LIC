@@ -138,6 +138,7 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     bool cam_init;
+    std::string cam_model;
     typedef std::shared_ptr<R3LIVE> Ptr;
     std::mutex  m_mutex_lio_process;
     std::shared_ptr<ImuProcess> m_imu_process;
@@ -442,6 +443,12 @@ public:
             m_camera_dist_coeffs << cam_d0, cam_d1, cam_d2, cam_d3, cam_d4;
             m_camera_ext_R << EP_CtoI.q.toRotationMatrix();
             m_camera_ext_t << EP_CtoI.p;
+
+            if (node["cam_model"])
+                cam_model = node["cam_model"].as<std::string>();
+            else
+                cam_model = "";                                                   
+  
         }
         // if(!Common_tools::if_file_exist(m_map_output_dir))
         // {

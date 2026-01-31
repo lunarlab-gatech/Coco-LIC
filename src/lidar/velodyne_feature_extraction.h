@@ -28,7 +28,7 @@
 #include <utils/mypcl_cloud_type.h>
 #include <utils/parameter_struct.h>
 
-// #include <livox_ros_driver/CustomMsg.h>
+// #include <livox_ros_driver2/CustomMsg.h>
 #include <cmath>
 
 namespace cocolic

@@ -28,7 +28,7 @@
 #include <utils/mypcl_cloud_type.h>
 #include <utils/parameter_struct.h>
 
-#include <livox_ros_driver/CustomMsg.h>
+#include <livox_ros_driver2/CustomMsg.h>
 
 #include <cmath>
 // #define M_PI 3.14159265358979
@@ -90,19 +90,19 @@ namespace cocolic
     LivoxFeatureExtraction(const YAML::Node &node);
 
     // 
-    bool ParsePointCloud(const livox_ros_driver::CustomMsg::ConstPtr &lidar_msg,
+    bool ParsePointCloud(const livox_ros_driver2::CustomMsg::ConstPtr &lidar_msg,
                          RTPointCloud::Ptr out_cloud);
 
     // 
-    bool ParsePointCloudR3LIVE(const livox_ros_driver::CustomMsg::ConstPtr &lidar_msg,
+    bool ParsePointCloudR3LIVE(const livox_ros_driver2::CustomMsg::ConstPtr &lidar_msg,
                          RTPointCloud::Ptr out_cloud);
 
     // 
-    bool ParsePointCloudNoFeature(const livox_ros_driver::CustomMsg::ConstPtr &lidar_msg,
+    bool ParsePointCloudNoFeature(const livox_ros_driver2::CustomMsg::ConstPtr &lidar_msg,
                                   RTPointCloud::Ptr out_cloud);
 
     // test
-    void LivoxHandler(const livox_ros_driver::CustomMsg::ConstPtr &lidar_msg);
+    void LivoxHandler(const livox_ros_driver2::CustomMsg::ConstPtr &lidar_msg);
 
     inline RTPointCloud::Ptr GetCornerFeature() const { return p_corner_cloud; }
 

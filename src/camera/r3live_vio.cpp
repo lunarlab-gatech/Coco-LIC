@@ -1308,21 +1308,53 @@ void R3LIVE::UpdateVisualSubMap(const cv::Mat& img_in, double img_time, const Ei
     if (!cam_init)
     {
         cam_init = true;
-        double *intrinsic_data = m_camera_intrinsic.data();
-        double *camera_dist_data = m_camera_dist_coeffs.data();
-        g_cam_K << intrinsic_data[ 0 ], intrinsic_data[ 1 ], intrinsic_data[ 2 ], 
-                                  intrinsic_data[ 3 ], intrinsic_data[ 4 ], intrinsic_data[ 5 ], 
-                                  intrinsic_data[ 6 ], intrinsic_data[ 7 ], intrinsic_data[ 8 ];
-        g_cam_dist = Eigen::Map< Eigen::Matrix< double, 5, 1 > >( camera_dist_data );
-        cv::eigen2cv( g_cam_K, intrinsic );
-        cv::eigen2cv( g_cam_dist, dist_coeffs );
-        cv::initUndistortRectifyMap( intrinsic, dist_coeffs, cv::Mat(), intrinsic, cv::Size(m_vio_image_width, m_vio_image_heigh),
-                                 CV_16SC2, m_ud_map1, m_ud_map2 );  //
 
-        op_track.set_intrinsic( g_cam_K, g_cam_dist * 0, cv::Size( m_vio_image_width, m_vio_image_heigh) );
-        op_track.m_maximum_vio_tracked_pts = m_maximum_vio_tracked_pts;         
-        m_map_rgb_pts.m_minimum_depth_for_projection = m_tracker_minimum_depth;
-        m_map_rgb_pts.m_maximum_depth_for_projection = m_tracker_maximum_depth;
+        if (cam_model == "")
+        {
+            double *intrinsic_data = m_camera_intrinsic.data();
+            double *camera_dist_data = m_camera_dist_coeffs.data();
+            g_cam_K << intrinsic_data[ 0 ], intrinsic_data[ 1 ], intrinsic_data[ 2 ], 
+                                    intrinsic_data[ 3 ], intrinsic_data[ 4 ], intrinsic_data[ 5 ], 
+                                    intrinsic_data[ 6 ], intrinsic_data[ 7 ], intrinsic_data[ 8 ];
+            g_cam_dist = Eigen::Map< Eigen::Matrix< double, 5, 1 > >( camera_dist_data );
+            cv::eigen2cv( g_cam_K, intrinsic );
+            cv::eigen2cv( g_cam_dist, dist_coeffs );
+            cv::initUndistortRectifyMap( intrinsic, dist_coeffs, cv::Mat(), intrinsic, cv::Size(m_vio_image_width, m_vio_image_heigh),
+                                    CV_16SC2, m_ud_map1, m_ud_map2 );  //
+
+            op_track.set_intrinsic( g_cam_K, g_cam_dist * 0, cv::Size( m_vio_image_width, m_vio_image_heigh) );
+            op_track.m_maximum_vio_tracked_pts = m_maximum_vio_tracked_pts;         
+            m_map_rgb_pts.m_minimum_depth_for_projection = m_tracker_minimum_depth;
+            m_map_rgb_pts.m_maximum_depth_for_projection = m_tracker_maximum_depth;
+        } else if (cam_model == "fisheye") {
+            // FISHEYE camera model undistortion
+            // Reference: https://docs.opencv.org/4.10.0/db/d58/group__calib3d__fisheye.html
+            // Note: OpenCV fisheye model requires exactly 4 distortion coefficients (k1, k2, k3, k4)
+
+            double *intrinsic_data = m_camera_intrinsic.data();
+            double *camera_dist_data = m_camera_dist_coeffs.data();
+            g_cam_K << intrinsic_data[ 0 ], intrinsic_data[ 1 ], intrinsic_data[ 2 ],
+                                    intrinsic_data[ 3 ], intrinsic_data[ 4 ], intrinsic_data[ 5 ],
+                                    intrinsic_data[ 6 ], intrinsic_data[ 7 ], intrinsic_data[ 8 ];
+            g_cam_dist = Eigen::Map< Eigen::Matrix< double, 5, 1 > >( camera_dist_data );
+            cv::eigen2cv( g_cam_K, intrinsic );
+            // Fisheye model uses only 4 distortion coefficients
+            Eigen::Matrix< double, 4, 1 > fisheye_dist;
+            fisheye_dist << camera_dist_data[0], camera_dist_data[1], camera_dist_data[2], camera_dist_data[3];
+            cv::Mat fisheye_dist_coeffs;
+            cv::eigen2cv( fisheye_dist, fisheye_dist_coeffs );
+            // Keep original K separate, compute new camera matrix into new_intrinsic
+            cv::Mat new_intrinsic;
+            cv::fisheye::estimateNewCameraMatrixForUndistortRectify(
+                intrinsic, fisheye_dist_coeffs, cv::Size(m_vio_image_width, m_vio_image_heigh), cv::Mat::eye(3, 3, CV_64F), new_intrinsic, 0.0 );
+            // Pass original K and new P separately
+            cv::fisheye::initUndistortRectifyMap( intrinsic, fisheye_dist_coeffs, cv::Mat::eye(3, 3, CV_64F), new_intrinsic, cv::Size(m_vio_image_width, m_vio_image_heigh),
+                                    CV_16SC2, m_ud_map1, m_ud_map2 );
+            op_track.set_intrinsic( g_cam_K, g_cam_dist * 0, cv::Size( m_vio_image_width, m_vio_image_heigh) );
+            op_track.m_maximum_vio_tracked_pts = m_maximum_vio_tracked_pts;
+            m_map_rgb_pts.m_minimum_depth_for_projection = m_tracker_minimum_depth;
+            m_map_rgb_pts.m_maximum_depth_for_projection = m_tracker_maximum_depth;
+        }
     }
 
     // [2]

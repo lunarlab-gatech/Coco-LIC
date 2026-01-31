@@ -27,7 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   message_generation
   image_transport
-  livox_ros_driver
+  livox_ros_driver2
 )
 
 # FIND_PACKAGE(Boost REQUIRED COMPONENTS thread)
