@@ -684,6 +684,7 @@ namespace cocolic
     image_buf_.back().timestamp = msg->header.stamp.toSec() * S_TO_NS;
     image_buf_.back().image = cvImgPtr->image;
     nerf_time_.push_back(image_buf_.back().timestamp);
+    if (save_images_) nerf_images_.push_back(cvImgPtr->image.clone());
 
     // Resize disabled - use original resolution to match config intrinsics
     // if (image_buf_.back().image.cols == 640 || image_buf_.back().image.cols == 1280)
@@ -720,6 +721,7 @@ namespace cocolic
     image_buf_.back().timestamp = msg->header.stamp.toSec() * S_TO_NS;
     image_buf_.back().image = cvImgPtr->image;
     nerf_time_.push_back(image_buf_.back().timestamp);
+    if (save_images_) nerf_images_.push_back(cvImgPtr->image.clone());
 
     // std::cout << image_buf_.back().image.rows << " " << image_buf_.back().image.cols << std::endl;
 

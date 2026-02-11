@@ -229,4 +229,42 @@ void Trajectory::ToTUMTxt(std::string traj_path, int64_t maxtime, bool is_evo_vi
   std::cout << "   Start-to-end deviation: " << std::setprecision(3) << start_end.translation().norm() << "m, " << rotation_vector.angle() * 180 / M_PI  << "°." << std::endl;
 }
 
+void Trajectory::ToColmapImagesTxt(std::string traj_path, const std::vector<int64_t>& image_timestamps) {
+    std::ofstream outfile(traj_path);
+    outfile.setf(std::ios::fixed);
+
+    int image_id = 1;
+
+    for (int64_t t : image_timestamps) {
+        std::cout << "  [COLMAP] image_id=" << image_id
+                  << " timestamp_ns=" << t
+                  << " (" << t * 1e-9 << "s)" << std::endl;
+
+        // 1. Get Camera-to-World Pose
+        SE3d pose_cw = GetIMUPoseNsNURBS(t);
+
+        // 2. Convert to World-to-Camera (COLMAP standard)
+        SE3d pose_wc = pose_cw.inverse();
+
+        Eigen::Vector3d t_vec = pose_wc.translation();
+        Eigen::Quaterniond q = pose_wc.unit_quaternion();
+
+        // 3. Write Image Pose Line
+        // Format: IMAGE_ID, QW, QX, QY, QZ, TX, TY, TZ, CAMERA_ID, NAME
+        outfile.precision(9);
+        outfile << image_id << " "
+                << q.w() << " " << q.x() << " " << q.y() << " " << q.z() << " "
+                << t_vec.x() << " " << t_vec.y() << " " << t_vec.z() << " "
+                << "1 " << "frame_" << t << ".png" << "\n";
+
+        // 4. Write Empty Points Line
+        // COLMAP expects a second line for 2D points (can be empty)
+        outfile << "\n";
+
+        image_id++;
+    }
+    outfile.close();
+    std::cout << "🚀 Saved COLMAP format (" << image_timestamps.size() << " images) to " << traj_path << std::endl;
+}
+
 }  // namespace cocolic

@@ -299,6 +299,8 @@ namespace cocolic
 
     std::deque<ImageData> image_buf_;
     std::vector<int64_t> nerf_time_;
+    std::vector<cv::Mat> nerf_images_;  // only populated when save_images is true
+    bool save_images_ = false;
     Eigen::aligned_deque<IMUData> imu_buf_;
     std::deque<LiDARCloudData> lidar_buf_;
     std::vector<int64_t> lidar_max_timestamps_;

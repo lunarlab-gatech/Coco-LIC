@@ -130,6 +130,8 @@ namespace cocolic
 
     void Publish3DGSMappingData(const NextMsgs& cur_msg);
 
+    void SaveColmapCamerasTxt(const std::string& save_path, const YAML::Node& cam_node);
+
   protected:
     OdometryMode odometry_mode_;
 
@@ -166,6 +168,7 @@ namespace cocolic
     std::string cache_path_;
 
     double pasue_time_;
+    bool save_images_ = false;
 
     TimeStatistics time_summary_;
 
@@ -209,6 +212,8 @@ namespace cocolic
     std::queue<int64_t> time_buf;  // img timestamp
     std::queue<LiDARFeature> lidar_buf;  // lidarfeature in local
     std::queue<cv::Mat> img_buf;  // undistorted
+
+    YAML::Node cam_node;
   };
 
 } // namespace cocolic

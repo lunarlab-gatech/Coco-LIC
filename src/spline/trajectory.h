@@ -230,6 +230,8 @@ class Trajectory : public Se3Spline<SplineOrder, double> {
 
   void ToTUMTxt(std::string traj_path, int64_t maxtime, bool is_evo_viral, double dt = 0.1);
 
+  void ToColmapImagesTxt(std::string traj_path, const std::vector<int64_t>& image_timestamps);
+
   void SetDataStartTime(int64_t time) { data_start_time_ = time; }
 
   double opt_min_init_time_tmp = 0;

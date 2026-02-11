@@ -45,7 +45,7 @@ namespace cocolic
     YAML::Node imu_node = YAML::LoadFile(config_path + imu_yaml);
 
     std::string cam_yaml = config_path + node["camera_yaml"].as<std::string>();
-    YAML::Node cam_node = YAML::LoadFile(cam_yaml);
+    cam_node = YAML::LoadFile(cam_yaml);
 
     odometry_mode_ = OdometryMode(node["odometry_mode"].as<int>());
     std::cout << "\n🥥 Odometry Mode: ";
@@ -118,6 +118,8 @@ namespace cocolic
     bool verbose;
     nh.param<double>("pasue_time", pasue_time_, -1);
     nh.param<bool>("verbose", verbose, false);
+    nh.param<bool>("save_images", save_images_, false);
+    msg_manager_->save_images_ = save_images_;
     trajectory_manager_->verbose = verbose;
 
     // evaluation
@@ -867,10 +869,89 @@ namespace cocolic
     trajectory_->ToTUMTxt(cache_path_ + "_" + descri + ".txt", maxtime, is_evo_viral_,
                           0.01);  // 100Hz pose querying
 
+    // Build image timestamps relative to trajectory start, filtered to valid range
+    std::vector<int64_t> image_timestamps;
+    int64_t data_start_time = trajectory_->GetDataStartTime();
+    std::cout << "nerf_time_ total: " << msg_manager_->nerf_time_.size()
+              << ", data_start_time: " << data_start_time
+              << ", maxtime: " << maxtime << std::endl;
+    for (int64_t abs_t : msg_manager_->nerf_time_) {
+        int64_t rel_t = abs_t - data_start_time;
+        if (rel_t >= 0 && rel_t <= maxtime) {
+            image_timestamps.push_back(rel_t);
+        } else {
+            std::cout << "  filtered out: abs_t=" << abs_t
+                      << ", rel_t=" << rel_t << std::endl;
+        }
+    }
+    std::cout << "image_timestamps after filter: " << image_timestamps.size() << std::endl;
+    trajectory_->ToColmapImagesTxt(cache_path_ + "_images.txt", image_timestamps);
+
+    // Save images as PNG files with filenames matching images.txt
+    if (save_images_) {
+        std::string images_dir = cache_path_ + "_images";
+        boost::filesystem::create_directories(images_dir);
+        int saved_count = 0;
+        for (size_t i = 0; i < msg_manager_->nerf_time_.size(); i++) {
+            int64_t abs_t = msg_manager_->nerf_time_[i];
+            int64_t rel_t = abs_t - data_start_time;
+            if (rel_t >= 0 && rel_t <= maxtime) {
+                std::string filename = images_dir + "/frame_" + std::to_string(rel_t) + ".png";
+                cv::imwrite(filename, msg_manager_->nerf_images_[i]);
+                saved_count++;
+            }
+        }
+        std::cout << "🖼️ Saved " << saved_count << " images to " << images_dir << std::endl;
+    }
+
+    SaveColmapCamerasTxt(cache_path_ + "_cameras.txt" , cam_node);
+
     // int sum_cp = std::accumulate(cp_num_vec.begin(), cp_num_vec.end(), 0);
     // std::cout << GREEN << "ave_cp_num " << sum_cp * 1.0 / cp_num_vec.size() << RESET << std::endl;
 
     return trajectory_->maxTimeNURBS();
   }
 
+  void OdometryManager::SaveColmapCamerasTxt(const std::string& save_path, const YAML::Node& cam_node) 
+  {
+    std::ofstream outfile(save_path);
+    if (!outfile.is_open()) return;
+
+    // 1. Basic Metadata
+    int width = cam_node["image_width"].as<int>();
+    int height = cam_node["image_height"].as<int>();
+    double fx = cam_node["cam_fx"].as<double>();
+    double fy = cam_node["cam_fy"].as<double>();
+    double cx = cam_node["cam_cx"].as<double>();
+    double cy = cam_node["cam_cy"].as<double>();
+
+    // 2. Determine Model and Distortion Parameters
+    std::string model_type = "OPENCV"; // Default
+    if (cam_node["cam_model"] && cam_node["cam_model"].as<std::string>() == "fisheye") {
+        model_type = "OPENCV_FISHEYE";
+    }
+
+    // 3. Extract Distortion (d0-d3 mapping)
+    double d0 = cam_node["cam_d0"].as<double>();
+    double d1 = cam_node["cam_d1"].as<double>();
+    double d2 = cam_node["cam_d2"].as<double>();
+    double d3 = cam_node["cam_d3"].as<double>();
+    double d4 = cam_node["cam_d4"].as<double>();
+
+    // 4. Write to File
+    outfile.setf(std::ios::fixed);
+    outfile.precision(10);
+    
+    // Both OPENCV and OPENCV_FISHEYE in COLMAP take 8 parameters in this order:
+    // fx, fy, cx, cy, d0, d1, d2, d3
+    outfile << "# Camera list with one line of data per camera:\n";
+    outfile << "#   CAMERA_ID, MODEL, WIDTH, HEIGHT, PARAMS[]\n";
+    outfile << "# Number of cameras: 1\n";
+    outfile << "1 " << model_type << " " << width << " " << height << " "
+            << fx << " " << fy << " " << cx << " " << cy << " "
+            << d0 << " " << d1 << " " << d2 << " " << d3 << " " << d4 << "\n";
+
+    outfile.close();
+    std::cout << "📸 Saved COLMAP cameras.txt as " << model_type << std::endl;
+  }
 } // namespace cocolic

@@ -7,7 +7,8 @@
   <!-- <arg name="config_path"       default = "/config/ct_odometry_lvisam.yaml" /> -->
   <arg name="bag_path"          default = "" />  
   <arg name="pasue_time"        default = "-1" />
-  <arg name="verbose"           default = "false" />  
+  <arg name="verbose"           default = "false" />
+  <arg name="save_images"      default = "false" />
   
   <node pkg="cocolic" type="odometry_node" name="$(anon odometry_node)" output="screen">
     <env name="LD_LIBRARY_PATH" value="/usr/local/lib:$(env LD_LIBRARY_PATH)" />
@@ -16,6 +17,7 @@
     <param name="bag_path"        type="string" value="$(arg bag_path)" />
     <param name="pasue_time"      type="double" value="$(arg pasue_time)" />
     <param name="verbose"         type="bool"   value="$(arg verbose)" />
+    <param name="save_images"     type="bool"   value="$(arg save_images)" />
   </node>
 
   <node pkg="rviz" type="rviz" name="rviz_odom" output="log" required = "false" args="-d $(find cocolic)/config/coco.rviz" />

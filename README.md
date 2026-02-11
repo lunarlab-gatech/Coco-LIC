@@ -53,6 +53,17 @@ cd ~/catkin_coco/src/Coco-LIC && mkdir data
   
   The estimated IMU trajectory will be saved in the folder `./src/Coco-LIC/data`.
 
+## Save images in rosbag before undistortion 
+
+Pass _save_images:=true on the command line to enable image saving:
+
+  ```shell
+  cd ~/catkin_coco && source devel/setup.bash
+  roslaunch cocolic odometry.launch config_path:=config/ct_odometry_geoscan_s1.yaml save_images:=true 
+  ```                                                                                                                                                                                                          
+  Or in a launch file:
+  <param name="save_images" value="true"/>
+
 ## Supplementary1 - non-uniform verification
 
 1 control point per 0.1 seconds 🥊 adaptively placing control points per 0.1 seconds.
