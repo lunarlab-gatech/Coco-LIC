@@ -1326,7 +1326,7 @@ void R3LIVE::UpdateVisualSubMap(const cv::Mat& img_in, double img_time, const Ei
             op_track.m_maximum_vio_tracked_pts = m_maximum_vio_tracked_pts;         
             m_map_rgb_pts.m_minimum_depth_for_projection = m_tracker_minimum_depth;
             m_map_rgb_pts.m_maximum_depth_for_projection = m_tracker_maximum_depth;
-        } else if (cam_model == "fisheye") {
+        } else if (cam_model == "Equidistant") {
             // FISHEYE camera model undistortion
             // Reference: https://docs.opencv.org/4.10.0/db/d58/group__calib3d__fisheye.html
             // Note: OpenCV fisheye model requires exactly 4 distortion coefficients (k1, k2, k3, k4)
