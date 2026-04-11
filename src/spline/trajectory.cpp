@@ -18,6 +18,8 @@
 
 #include "trajectory.h"
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 
 namespace cocolic {
 
@@ -229,7 +231,7 @@ void Trajectory::ToTUMTxt(std::string traj_path, int64_t maxtime, bool is_evo_vi
   std::cout << "   Start-to-end deviation: " << std::setprecision(3) << start_end.translation().norm() << "m, " << rotation_vector.angle() * 180 / M_PI  << "°." << std::endl;
 }
 
-void Trajectory::ToColmapImagesTxt(std::string traj_path, const std::vector<int64_t>& image_timestamps) {
+void Trajectory::ToColmapImagesTxt(std::string traj_path, const std::vector<int64_t>& image_timestamps, int pad_width) {
     std::ofstream outfile(traj_path);
     outfile.setf(std::ios::fixed);
 
@@ -251,11 +253,13 @@ void Trajectory::ToColmapImagesTxt(std::string traj_path, const std::vector<int6
 
         // 3. Write Image Pose Line
         // Format: IMAGE_ID, QW, QX, QY, QZ, TX, TY, TZ, CAMERA_ID, NAME
+        std::ostringstream ts_ss;
+        ts_ss << std::setw(pad_width) << std::setfill('0') << t;
         outfile.precision(9);
         outfile << image_id << " "
                 << q.w() << " " << q.x() << " " << q.y() << " " << q.z() << " "
                 << t_vec.x() << " " << t_vec.y() << " " << t_vec.z() << " "
-                << "1 " << "frame_" << t << ".png" << "\n";
+                << "1 " << "frame_" << ts_ss.str() << ".png" << "\n";
 
         // 4. Write Empty Points Line
         // COLMAP expects a second line for 2D points (can be empty)

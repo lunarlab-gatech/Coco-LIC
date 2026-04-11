@@ -87,6 +87,8 @@ namespace cocolic
 
     void CheckData()
     {
+      if (lidar_surf_cloud->empty() || lidar_corner_cloud->empty() || lidar_raw_cloud->empty())
+        return;
       double max_time[3];
       max_time[0] = pcl::GetCloudMaxTimeNs(lidar_surf_cloud) * NS_TO_S;
       max_time[1] = pcl::GetCloudMaxTimeNs(lidar_corner_cloud) * NS_TO_S;
@@ -148,11 +150,14 @@ namespace cocolic
 
       max_timestamp = pcl::GetCloudMaxTimeNs(raw_cloud);
 
-      int64_t surf_max = pcl::GetCloudMaxTimeNs(surf_cloud);
-      int64_t corner_max = pcl::GetCloudMaxTimeNs(corner_cloud);
-      if (surf_max > max_timestamp || corner_max > max_timestamp)
+      if (!surf_cloud->empty() && !corner_cloud->empty())
       {
-        std::cout << RED << "surf/corner cloud max time wrong!" << RESET << std::endl;
+        int64_t surf_max = pcl::GetCloudMaxTimeNs(surf_cloud);
+        int64_t corner_max = pcl::GetCloudMaxTimeNs(corner_cloud);
+        if (surf_max > max_timestamp || corner_max > max_timestamp)
+        {
+          std::cout << RED << "surf/corner cloud max time wrong!" << RESET << std::endl;
+        }
       }
 
       is_time_wrt_traj_start = true;

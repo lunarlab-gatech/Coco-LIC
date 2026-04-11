@@ -18,6 +18,7 @@
 
 #include <eigen_conversions/eigen_msg.h>
 #include <odom/odometry_manager.h>
+#include <algorithm>
 #include <numeric>
 
 #include <fstream>
@@ -885,7 +886,15 @@ namespace cocolic
         }
     }
     std::cout << "image_timestamps after filter: " << image_timestamps.size() << std::endl;
-    trajectory_->ToColmapImagesTxt(cache_path_ + "_images.txt", image_timestamps);
+
+    // Compute zero-pad width from the largest timestamp so all filenames have the same length
+    int pad_width = 1;
+    if (!image_timestamps.empty()) {
+        int64_t max_ts = *std::max_element(image_timestamps.begin(), image_timestamps.end());
+        pad_width = static_cast<int>(std::to_string(max_ts).size());
+    }
+
+    trajectory_->ToColmapImagesTxt(cache_path_ + "_images.txt", image_timestamps, pad_width);
 
     // Save images as PNG files with filenames matching images.txt
     if (save_images_) {
@@ -896,7 +905,9 @@ namespace cocolic
             int64_t abs_t = msg_manager_->nerf_time_[i];
             int64_t rel_t = abs_t - data_start_time;
             if (rel_t >= 0 && rel_t <= maxtime) {
-                std::string filename = images_dir + "/frame_" + std::to_string(rel_t) + ".png";
+                std::ostringstream ts_ss;
+                ts_ss << std::setw(pad_width) << std::setfill('0') << rel_t;
+                std::string filename = images_dir + "/frame_" + ts_ss.str() + ".png";
                 cv::imwrite(filename, msg_manager_->nerf_images_[i]);
                 saved_count++;
             }
@@ -927,7 +938,7 @@ namespace cocolic
 
     // 2. Determine Model and Distortion Parameters
     std::string model_type = "OPENCV"; // Default
-    if (cam_node["cam_model"] && cam_node["cam_model"].as<std::string>() == "fisheye") {
+    if (cam_node["cam_model"] && cam_node["cam_model"].as<std::string>() == "Equidistant") {
         model_type = "OPENCV_FISHEYE";
     }
 
@@ -949,7 +960,7 @@ namespace cocolic
     outfile << "# Number of cameras: 1\n";
     outfile << "1 " << model_type << " " << width << " " << height << " "
             << fx << " " << fy << " " << cx << " " << cy << " "
-            << d0 << " " << d1 << " " << d2 << " " << d3 << " " << d4 << "\n";
+            << d0 << " " << d1 << " " << d2 << " " << d3 << "\n";
 
     outfile.close();
     std::cout << "📸 Saved COLMAP cameras.txt as " << model_type << std::endl;

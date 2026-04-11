@@ -323,6 +323,10 @@ void Rgbmap_tracker::track_img(std::shared_ptr<Image_frame> &img_pose, double di
 
     tim.tic("Reject_F");
     unsigned int pts_before_F = m_last_tracked_pts.size();
+    if (m_last_tracked_pts.size() < 8)
+    {
+        return;
+    }
     mat_F = cv::findFundamentalMat(m_last_tracked_pts, m_current_tracked_pts, cv::FM_RANSAC, 1.0, 0.997, status);
     // mat_F = cv::findFundamentalMat( m_last_tracked_pts, m_current_tracked_pts, cv::FM_RANSAC, 1.0, 0.800, status );
     unsigned int size_a = m_current_tracked_pts.size();
