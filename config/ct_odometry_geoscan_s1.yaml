@@ -5,7 +5,7 @@ imu_yaml: /geoscan_s1/imu.yaml
 camera_yaml: /geoscan_s1/camera.yaml
 
 
-bag_path: /root/catkin_coco/src/Coco-LIC/data/data_0.bag
+bag_path: /root/catkin_coco/src/Coco-LIC/data/2026-02-05-15-59-14.bag
 bag_start: 0.
 bag_durr: -1
 

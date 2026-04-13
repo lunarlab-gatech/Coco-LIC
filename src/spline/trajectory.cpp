@@ -242,11 +242,11 @@ void Trajectory::ToColmapImagesTxt(std::string traj_path, const std::vector<int6
                   << " timestamp_ns=" << t
                   << " (" << t * 1e-9 << "s)" << std::endl;
 
-        // 1. Get Camera-to-World Pose
-        SE3d pose_cw = GetIMUPoseNsNURBS(t);
+        // 1. Get Camera-to-World Pose (T_{G<-C} = T_{G<-I} * T_{I<-C})
+        SE3d pose_cam_to_world = GetCameraPoseNURBS(t);
 
         // 2. Convert to World-to-Camera (COLMAP standard)
-        SE3d pose_wc = pose_cw.inverse();
+        SE3d pose_wc = pose_cam_to_world.inverse();
 
         Eigen::Vector3d t_vec = pose_wc.translation();
         Eigen::Quaterniond q = pose_wc.unit_quaternion();
