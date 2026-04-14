@@ -3,7 +3,7 @@ lidar0:
     is_livox: true
     Extrinsics:  # lidar to imu
         time_offset: 0.000
-        Trans: [ 0.011, 0.02329, -0.04412 ]
+        Trans: [ -0.011, -0.02329, 0.04412 ] # l2i
         Rot: [1, 0, 0,
               0, 1, 0,
               0, 0, 1]

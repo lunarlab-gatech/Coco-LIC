@@ -1,6 +1,4 @@
-%YAML:1.0
-
-image_topic: /left_camera/image  # suffix "compressed" omitted
+image_topic: /camera/image_color  # suffix "compressed" omitted
 
 image_width: 640 
 image_height: 512 

@@ -1,11 +1,13 @@
 %YAML:1.0
 
-image_topic: /right_camera/image/  
+# image_topic: /right_camera/image/compressed  # "compressed" is omitted
+image_topic: /right_camera/image
 
 image_width: 1280  
 image_height: 1024 
 # from MS teams message on Feb 19th, 2026
 cam_model: Equidistant
+# cam_model: fisheye
 cam_fx: 472.95874
 cam_fy: 472.99143
 cam_cx: 655.02684
@@ -16,12 +18,14 @@ cam_d2: -0.010116
 cam_d3: 0.003187
 cam_d4: 0.0
 
+cam_type: Fisheye
+
 CameraExtrinsics:  # camera to imu(in lidar)
     time_offset: 0.000
     # from MS teams message on Feb 19th, 2026
     # calculated by calculate_cam2imu.py 
-    Rot: [-0.006567, -0.999975,  0.002804]
-       0.436679, -0.00539,  -0.899601,
-       0.899593, -0.004684,  0.436703]
-    Trans: [-0.0237, -0.085754, -0.023251]
+    Rot: [-0.006567, 0.436679, 0.899593,
+          -0.999975, -0.005390, -0.004684,
+          0.002804, -0.899601, 0.436703]
+    Trans: [0.017616, -0.058479, -0.062992]
 

@@ -1,0 +1,27 @@
+%YAML:1.0
+
+image_topic: /right_camera/image/compressed  # "compressed" is omitted
+# image_topic: /right_camera/image
+
+image_width: 1280  
+image_height: 1024 
+cam_model: Equidistant
+cam_fx: 467.44275018622574
+cam_fy: 466.805186815233
+cam_cx: 658.829249055717
+cam_cy: 519.6802678124923
+cam_d0: -0.026931814656773856
+cam_d1: 0.0037434928646581226
+cam_d2: -0.000586074477876758
+cam_d3: -0.00018162294789360667
+cam_d4: 0.0
+
+cam_type: Fisheye
+
+CameraExtrinsics:  # camera to imu(in lidar)
+    time_offset: 0.000
+    Rot: [-0.008655, 0.447172, 0.894406,
+          -0.999961, -0.005455, -0.006949,
+          0.001772, -0.894432, 0.447201]
+    Trans: [0.055408, -0.075530, -0.065377]
+

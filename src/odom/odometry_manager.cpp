@@ -927,7 +927,10 @@ namespace cocolic
 
     // 2. Determine Model and Distortion Parameters
     std::string model_type = "OPENCV"; // Default
-    if (cam_node["cam_model"] && cam_node["cam_model"].as<std::string>() == "fisheye") {
+    // if (cam_node["cam_model"] && cam_node["cam_model"].as<std::string>() == "fisheye") {
+    //     model_type = "OPENCV_FISHEYE";
+    // }
+    if (cam_node["cam_type"].as<std::string>() == "Fisheye") {
         model_type = "OPENCV_FISHEYE";
     }
 
@@ -950,6 +953,9 @@ namespace cocolic
     outfile << "1 " << model_type << " " << width << " " << height << " "
             << fx << " " << fy << " " << cx << " " << cy << " "
             << d0 << " " << d1 << " " << d2 << " " << d3 << " " << d4 << "\n";
+    // outfile << "1 " << model_type << " " << width << " " << height << " "
+    //         << fx << " " << fy << " " << cx << " " << cy << " "
+    //         << d0 << " " << d1 << " " << d2 << " " << d3 << "\n";
 
     outfile.close();
     std::cout << "📸 Saved COLMAP cameras.txt as " << model_type << std::endl;
