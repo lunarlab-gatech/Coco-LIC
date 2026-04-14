@@ -22,7 +22,8 @@ CameraExtrinsics:  # camera to imu(in lidar)
     # calculated by calculate_cam2imu.py 
     # Don't directly use Rcl and Pcl (transformation from lidar to camera from FAST-Calib) 
     # because below Rot matrix is transposed one from Rcl
-    Trans: [0.039616, -0.011899, -0.151232]
+    Trans: [0.017616, -0.058479, -0.062992]
     Rot: [-0.006567, 0.436679, 0.899593,
-        -0.999975, -0.005390, -0.004684,
-        0.002804, -0.899601, 0.436703]
+          -0.999975, -0.005390, -0.004684,
+          0.002804, -0.899601, 0.436703]
+
